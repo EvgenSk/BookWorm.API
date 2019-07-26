@@ -12,8 +12,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="NLP.API.OrleansHostingExtensions" Version="0.1.0-CI-20190719-174105" />
     <PackageReference Include="Orleans.CompoundGrainStorage" Version="0.1.0-CI-20190717-063643" />
+    <PackageReference Include="Orleans.Providers.MongoDB" Version="2.4.0" />
     <PackageReference Include="OrleansDashboard" Version="2.3.6" />
     <PackageReference Include="WordsAPI.NET.OrleansHostingExtensions" Version="0.1.0-CI-20190719-172948" />
+    <PackageReference Include="Zuercher.Orleans.Persistence.Redis" Version="0.1.0-CI-20190726-044942" />
   </ItemGroup>
 
   <ItemGroup>

@@ -23,8 +23,9 @@ namespace BookWorm.API
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public async Task ConfigureServices(IServiceCollection services)
         {
+			await services.AddOrleansClusterClient(Configuration);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -44,5 +45,6 @@ namespace BookWorm.API
             app.UseHttpsRedirection();
             app.UseMvc();
         }
-    }
+
+	}
 }
