@@ -3,24 +3,29 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <UserSecretsId>26d07aa7-c6b8-4b6f-817f-2c7bf7ffc096</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Orleans.Server" Version="2.3.6" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="2.4.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
-    <PackageReference Include="NLP.API.OrleansHostingExtensions" Version="0.1.0-CI-20190719-174105" />
+    <PackageReference Include="NLP.API.OrleansHostingExtensions" Version="0.1.0-CI-20190807-082528" />
     <PackageReference Include="Orleans.CompoundGrainStorage" Version="0.1.0-CI-20190717-063643" />
     <PackageReference Include="Orleans.Providers.MongoDB" Version="2.4.0" />
-    <PackageReference Include="OrleansDashboard" Version="2.3.6" />
-    <PackageReference Include="WordsAPI.NET.OrleansHostingExtensions" Version="0.1.0-CI-20190719-172948" />
+    <PackageReference Include="OrleansDashboard" Version="2.4.0" />
+    <PackageReference Include="WordsAPI.NET.OrleansHostingExtensions" Version="0.1.0-CI-20190813-085805" />
     <PackageReference Include="Zuercher.Orleans.Persistence.Redis" Version="0.1.0-CI-20190726-044942" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GrainInterfaces\GrainInterfaces.csproj" />
     <ProjectReference Include="..\Grains\Grains.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

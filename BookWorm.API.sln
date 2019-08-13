@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grains", "Grains\Grains.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookWorm.API", "BookWorm.API\BookWorm.API.csproj", "{9F8EA70A-B376-48A9-9253-01953E46981F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTypes", "CommonTypes\CommonTypes.csproj", "{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{9F8EA70A-B376-48A9-9253-01953E46981F}.Release|x64.Build.0 = Release|Any CPU
 		{9F8EA70A-B376-48A9-9253-01953E46981F}.Release|x86.ActiveCfg = Release|Any CPU
 		{9F8EA70A-B376-48A9-9253-01953E46981F}.Release|x86.Build.0 = Release|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Debug|x64.Build.0 = Debug|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Debug|x86.Build.0 = Debug|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Release|x64.ActiveCfg = Release|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Release|x64.Build.0 = Release|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Release|x86.ActiveCfg = Release|Any CPU
+		{264DDE8B-80D8-4FA4-846F-48EE55CB0ABE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
