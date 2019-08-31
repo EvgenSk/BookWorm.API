@@ -47,11 +47,12 @@ namespace BookWorm.API
 
 		public static async Task<IServiceCollection> AddOrleansClusterClient(this IServiceCollection services, IConfiguration configuration)
 		{
-			ISiloHost silo = BuildSiloHost(configuration);
-			await silo.StartAsync();
-			var client = silo.Services.GetRequiredService<IClusterClient>();
+			ISiloHost siloHost = BuildSiloHost(configuration);
+			await siloHost.StartAsync();
+			var client = siloHost.Services.GetRequiredService<IClusterClient>();
 			return 
 				services
+				.AddSingleton<ISiloHost>(siloHost)		// in order to be disposed correctly
 				.AddSingleton<IClusterClient>(client)
 				.AddSingleton<IGrainFactory>(client);
 		}
