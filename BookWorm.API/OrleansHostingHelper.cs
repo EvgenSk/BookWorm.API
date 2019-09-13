@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WordsAPI.NET.Core;
+using WordsAPI.NET.OrleansHostingExtensions;
 
 namespace BookWorm.API
 {
@@ -53,7 +54,8 @@ namespace BookWorm.API
                 {
                     parts.AddApplicationPart(typeof(ISimple).Assembly).WithReferences();
                     parts.AddApplicationPart(typeof(SimpleGrain).Assembly).WithReferences();
-                })
+					parts.AddApplicationPart(typeof(IWordsAPIGrainServiceClient).Assembly).WithReferences();
+				})
                 .Build();
 		}
 

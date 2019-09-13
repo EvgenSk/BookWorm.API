@@ -8,13 +8,20 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using WordsAPI.NET.Core;
+using WordsAPI.NET.OrleansHostingExtensions;
 
 namespace Grains
 {
     [StorageProvider(ProviderName = "Compound")]
     public class WordInfoGrain : Grain<WordInfo>, IWordInfoGrain
     {
+		readonly IWordsAPIGrainServiceClient WordsAPIGrainServiceClient;
         private Task _writeState;
+
+		public WordInfoGrain(IWordsAPIGrainServiceClient wordsAPIGrainServiceClient)
+		{
+			WordsAPIGrainServiceClient = wordsAPIGrainServiceClient;
+		}
         public Task<WordInfo> GetWordInfo() => Task.FromResult(State);
 
         public override async Task OnActivateAsync()
@@ -22,8 +29,7 @@ namespace Grains
             await base.OnActivateAsync();
             if(State is null)
             {
-                var wordsAPIClient = ServiceProvider.GetRequiredService<IWordsAPIClient>();
-                State = await wordsAPIClient.GetWordInfoAsync<WordInfo>(this.GrainReference.GetPrimaryKeyString());
+                State = await WordsAPIGrainServiceClient.GetWordInfoAsync<WordInfo>(this.GrainReference.GetPrimaryKeyString());
                 _writeState = WriteStateAsync();
             }
         }
