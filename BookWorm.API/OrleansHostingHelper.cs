@@ -10,6 +10,7 @@ using OrleansSimple;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using WordsAPI.NET.Core;
 using WordsAPI.NET.OrleansHostingExtensions;
@@ -27,34 +28,28 @@ namespace BookWorm.API
             var redisOptionsSection = configuration.GetSection("RedisGrainStorage");
             var mongoOptionsSection = configuration.GetSection("MongoDBGrainStorage");
             var wordsAPIOptionsSection = configuration.GetSection("WordsAPI");
-            var stanfordNLPOptionsSection = configuration.GetSection("StanfordNLPClient");
+            var stanfordNLPOptionsSection = configuration.GetSection("StanfordNLP");
 
             return new SiloHostBuilder()
-                .ConfigureServices((hostBuilderContext, services) => {
-                    hostBuilderContext.Configuration = configuration;
-                    services
-                    .Configure<RedisGrainStorageOptions>(cacheName, redisOptionsSection)
-                    .Configure<MongoDBGrainStorageOptions>(storageName, mongoOptionsSection);
-                })
+                .Configure<WordsAPIOptions>(wordsAPIOptionsSection)
+                .Configure<StanfordNLPOptions>(stanfordNLPOptionsSection)
+                .AddWordsAPIGrainService()
+                .AddStanfordNLPGrainService()
                 .Configure<RedisGrainStorageOptions>(redisOptionsSection)
                 .Configure<MongoDBGrainStorageOptions>(mongoOptionsSection)
-                .Configure<WordsAPIOptions>(wordsAPIOptionsSection)
-                .Configure<StanfordNLPClientOptions>(stanfordNLPOptionsSection)
                 .UseDashboard()
                 .UseLocalhostClustering()
                 .AddRedisGrainStorage(cacheName)
                 .AddMongoDBGrainStorage(storageName)
-                .AddCompoundGrainStorage(compoundName, c => {
+                .AddCompoundGrainStorage(compoundName, c =>
+                {
                     c.CacheName = cacheName;
                     c.StorageName = storageName;
                 })
-                .AddWordsAPIClient()
-                .AddStanfordNLPClient()
                 .ConfigureApplicationParts(parts =>
                 {
                     parts.AddApplicationPart(typeof(ISimple).Assembly).WithReferences();
                     parts.AddApplicationPart(typeof(SimpleGrain).Assembly).WithReferences();
-					parts.AddApplicationPart(typeof(IWordsAPIGrainServiceClient).Assembly).WithReferences();
 				})
                 .Build();
 		}

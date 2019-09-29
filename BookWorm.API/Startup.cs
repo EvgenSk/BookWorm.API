@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NLP.API.Core;
 
 namespace BookWorm.API
 {
@@ -26,6 +27,9 @@ namespace BookWorm.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            var stanfordNLPOptionsSection = Configuration.GetSection("StanfordNLP");
+            services.Configure<StanfordNLPOptions>(stanfordNLPOptionsSection);
+            services.AddSingleton<IStanfordNLPClient, StanfordNLPClient>();
             services.AddOrleansClusterClient(Configuration).Wait();
         }
 

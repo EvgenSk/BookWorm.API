@@ -3,6 +3,7 @@ using GrainInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using NLP.API.Core;
 using NLP.API.Core.Annotations;
+using NLP.API.OrleansHostingExtensions;
 using Orleans;
 using System;
 using System.Collections.Generic;
@@ -16,24 +17,19 @@ namespace Grains
 {
     public class ParagraphAnnotatorGrain : Grain, IParagraphAnnotatorGrain
     {
-        public IStanfordNLPClient StanfordNLPClient { get; private set; }
+        private readonly IStanfordNLPGrainServiceClient StanfordNLPGrainServiceClient;
 
-		readonly IWordsAPIGrainServiceClient WordsAPIGrainServiceClient;
+        private readonly IWordsAPIGrainServiceClient WordsAPIGrainServiceClient;
 
-		public ParagraphAnnotatorGrain(IWordsAPIGrainServiceClient wordsAPIGrainServiceClient)
+		public ParagraphAnnotatorGrain(IWordsAPIGrainServiceClient wordsAPIGrainServiceClient, IStanfordNLPGrainServiceClient stanfordNLPGrainServiceClient)
 		{
 			WordsAPIGrainServiceClient = wordsAPIGrainServiceClient;
-		}
-
-		public override Task OnActivateAsync()
-        {
-            StanfordNLPClient = ServiceProvider.GetRequiredService<IStanfordNLPClient>();
-            return Task.CompletedTask;
+            StanfordNLPGrainServiceClient = stanfordNLPGrainServiceClient;
         }
 
         public async Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraph(string text)
         {
-            var annotatedText = await StanfordNLPClient.AnnotateTextAsync(text);
+            var annotatedText = await StanfordNLPGrainServiceClient.AnnotateTextAsync(text);
 
             var words = annotatedText.Sentences.SelectMany(s => s.Tokens.Select(t => t.lemma)).Distinct();
             var lemmaTasks = words.Select(lemma => (lemma, WordsAPIGrainServiceClient.GetWordInfoAsync<WordInfo>(lemma))).ToList();

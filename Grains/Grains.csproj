@@ -12,8 +12,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Orleans.Core" Version="2.4.2" />
     <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="2.4.2" />
-    <PackageReference Include="WordsAPI.NET.Core" Version="0.1.0-CI-20190912-154600" />
-    <PackageReference Include="WordsAPI.NET.OrleansHostingExtensions" Version="0.1.0-CI-20190912-154600" />
+    <PackageReference Include="WordsAPI.NET.Core" Version="0.1.0-CI-20190927-161335" />
+    <PackageReference Include="WordsAPI.NET.OrleansHostingExtensions" Version="0.1.0-CI-20190927-161335" />
   </ItemGroup>
 
   <ItemGroup>
