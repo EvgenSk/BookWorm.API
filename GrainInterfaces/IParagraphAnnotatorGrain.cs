@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace GrainInterfaces
 {
-    public interface IParagraphAnnotatorGrain : IGrainWithIntegerKey
-    {
-        Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraph(string text);
-    }
+	public interface IParagraphAnnotatorGrain : IGrainWithIntegerKey
+	{
+		Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraph(string text);
+	}
 }

@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace GrainInterfaces
 {
-    public interface IPersistence : Orleans.IGrainWithIntegerKey
-    {
-        Task<DateTime> GetCreationTime();
-    }
+	public interface IPersistence : Orleans.IGrainWithIntegerKey
+	{
+		Task<DateTime> GetCreationTime();
+	}
 }

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace GrainInterfaces
 {
-    public interface ITextAnnotatorGrain : IGrainWithIntegerKey
-    {
-        Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateText(string text);
-        Task<IEnumerable<(AnnotatedText, Dictionary<string, WordInfo>)>> AnnotateTextByParagraphs(string text);
-    }
+	public interface ITextAnnotatorGrain : IGrainWithIntegerKey
+	{
+		Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateText(string text);
+		Task<IEnumerable<(AnnotatedText, Dictionary<string, WordInfo>)>> AnnotateTextByParagraphs(string text);
+	}
 }

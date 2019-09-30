@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace GrainInterfaces
 {
-    public interface IWordInfoGrain : Orleans.IGrainWithStringKey
-    {
-        Task<WordInfo> GetWordInfo();
-    }
+	public interface IWordInfoGrain : Orleans.IGrainWithStringKey
+	{
+		Task<WordInfo> GetWordInfo();
+	}
 }
