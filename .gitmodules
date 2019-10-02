@@ -1,0 +1,6 @@
+[submodule "lib/WordsAPI.NET"]
+	path = lib/WordsAPI.NET
+	url = https://github.com/EvgenSk/WordsAPI.NET.git
+[submodule "lib/NLP.API"]
+	path = lib/NLP.API
+	url = https://github.com/EvgenSk/NLP.API.git
