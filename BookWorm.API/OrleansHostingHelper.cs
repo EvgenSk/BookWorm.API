@@ -33,20 +33,23 @@ namespace BookWorm.API
             return new SiloHostBuilder()
                 .Configure<WordsAPIOptions>(wordsAPIOptionsSection)
                 .Configure<StanfordNLPOptions>(stanfordNLPOptionsSection)
+				.ConfigureServices(s =>
+				{
+					s.Configure<RedisGrainStorageOptions>(cacheName, redisOptionsSection);
+					s.Configure<MongoDBGrainStorageOptions>(storageName, mongoOptionsSection);
+				})
                 .AddWordsAPIGrainService()
                 .AddStanfordNLPGrainService()
-                .Configure<RedisGrainStorageOptions>(redisOptionsSection)
-                .Configure<MongoDBGrainStorageOptions>(mongoOptionsSection)
                 .UseDashboard()
                 .UseLocalhostClustering()
-                .AddRedisGrainStorage(cacheName)
-                .AddMongoDBGrainStorage(storageName)
-                .AddCompoundGrainStorage(compoundName, c =>
-                {
-                    c.CacheName = cacheName;
-                    c.StorageName = storageName;
-                })
-                .ConfigureApplicationParts(parts =>
+				.AddRedisGrainStorage(cacheName)
+				.AddMongoDBGrainStorage(storageName)
+				.AddCompoundGrainStorage(compoundName, c =>
+				{
+					c.CacheName = cacheName;
+					c.StorageName = storageName;
+				})
+				.ConfigureApplicationParts(parts =>
                 {
                     parts.AddApplicationPart(typeof(ISimple).Assembly).WithReferences();
                     parts.AddApplicationPart(typeof(SimpleGrain).Assembly).WithReferences();
