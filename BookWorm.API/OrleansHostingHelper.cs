@@ -19,29 +19,29 @@ namespace BookWorm.API
 {
 	public static class OrleansHostingHelper
 	{
-        static string cacheName = "Cache";
-        static string storageName = "Storage";
-        static string compoundName = "Compound";
+		static string cacheName = "Cache";
+		static string storageName = "Storage";
+		static string compoundName = "Compound";
 
-        private static ISiloHost BuildSiloHost(IConfiguration configuration)
+		private static ISiloHost BuildSiloHost(IConfiguration configuration)
 		{
-            var redisOptionsSection = configuration.GetSection("RedisGrainStorage");
-            var mongoOptionsSection = configuration.GetSection("MongoDBGrainStorage");
-            var wordsAPIOptionsSection = configuration.GetSection("WordsAPI");
-            var stanfordNLPOptionsSection = configuration.GetSection("StanfordNLP");
+			var redisOptionsSection = configuration.GetSection("RedisGrainStorage");
+			var mongoOptionsSection = configuration.GetSection("MongoDBGrainStorage");
+			var wordsAPIOptionsSection = configuration.GetSection("WordsAPI");
+			var stanfordNLPOptionsSection = configuration.GetSection("StanfordNLP");
 
-            return new SiloHostBuilder()
-                .Configure<WordsAPIOptions>(wordsAPIOptionsSection)
-                .Configure<StanfordNLPOptions>(stanfordNLPOptionsSection)
+			return new SiloHostBuilder()
+				.Configure<WordsAPIOptions>(wordsAPIOptionsSection)
+				.Configure<StanfordNLPOptions>(stanfordNLPOptionsSection)
 				.ConfigureServices(s =>
 				{
 					s.Configure<RedisGrainStorageOptions>(cacheName, redisOptionsSection);
 					s.Configure<MongoDBGrainStorageOptions>(storageName, mongoOptionsSection);
 				})
-                .AddWordsAPIGrainService()
-                .AddStanfordNLPGrainService()
-                .UseDashboard()
-                .UseLocalhostClustering()
+				.AddWordsAPIGrainService()
+				.AddStanfordNLPGrainService()
+				.UseDashboard()
+				.UseLocalhostClustering()
 				.AddRedisGrainStorage(cacheName)
 				.AddMongoDBGrainStorage(storageName)
 				.AddCompoundGrainStorage(compoundName, c =>
@@ -50,21 +50,21 @@ namespace BookWorm.API
 					c.StorageName = storageName;
 				})
 				.ConfigureApplicationParts(parts =>
-                {
-                    parts.AddApplicationPart(typeof(ISimple).Assembly).WithReferences();
-                    parts.AddApplicationPart(typeof(SimpleGrain).Assembly).WithReferences();
+				{
+					parts.AddApplicationPart(typeof(ISimple).Assembly).WithReferences();
+					parts.AddApplicationPart(typeof(SimpleGrain).Assembly).WithReferences();
 				})
-                .Build();
+				.Build();
 		}
 
 		public static async Task<IServiceCollection> AddOrleansClusterClient(this IServiceCollection services, IConfiguration configuration)
 		{
-            ISiloHost siloHost = BuildSiloHost(configuration);
-            await siloHost.StartAsync();
+			ISiloHost siloHost = BuildSiloHost(configuration);
+			await siloHost.StartAsync();
 			var client = siloHost.Services.GetRequiredService<IClusterClient>();
 			return
 				services
-				.AddSingleton<ISiloHost>(siloHost)		// in order to be disposed correctly
+				.AddSingleton<ISiloHost>(siloHost)      // in order to be disposed correctly
 				.AddSingleton<IClusterClient>(client)
 				.AddSingleton<IGrainFactory>(client);
 		}

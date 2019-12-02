@@ -9,24 +9,24 @@ using NLP.API.Core;
 
 namespace BookWorm.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class SimpleAnalysisController : ControllerBase
-    {
-        public SimpleAnalysisController(IStanfordNLPClient stanfordNLPClient)
-        {
-            StanfordNLPClient = stanfordNLPClient;
-        }
+	[Route("api/[controller]")]
+	[ApiController]
+	public class SimpleAnalysisController : ControllerBase
+	{
+		public SimpleAnalysisController(IStanfordNLPClient stanfordNLPClient)
+		{
+			StanfordNLPClient = stanfordNLPClient;
+		}
 
-        public IStanfordNLPClient StanfordNLPClient { get; }
+		public IStanfordNLPClient StanfordNLPClient { get; }
 
 
-        // POST: api/SimpleAnalysis
-        [HttpPost]
-        public async Task<string> Post([FromBody] string text)
-        {
-            var annotatedText = await StanfordNLPClient.AnnotateTextAsync(text);
-            return JsonConvert.SerializeObject(annotatedText);
-        }
-    }
+		// POST: api/SimpleAnalysis
+		[HttpPost]
+		public async Task<string> Post([FromBody] string text)
+		{
+			var annotatedText = await StanfordNLPClient.AnnotateTextAsync(text);
+			return JsonConvert.SerializeObject(annotatedText);
+		}
+	}
 }
