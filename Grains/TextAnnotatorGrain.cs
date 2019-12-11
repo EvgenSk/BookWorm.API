@@ -17,12 +17,11 @@ namespace Grains
 	{
 		private readonly string[] ParagraphSeparators = new[] { "\r\n", "\r", "\n" };
 
-		private IClusterClient ClusterClient { get; set; }
+		private IClusterClient _clusterClient { get; set; }
 
-		public override async Task OnActivateAsync()
+		public TextAnnotatorGrain(IClusterClient clusterClient)
 		{
-			await base.OnActivateAsync();
-			ClusterClient = ServiceProvider.GetRequiredService<IClusterClient>();
+			_clusterClient = clusterClient;
 		}
 
 		public async Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateText(string text)
@@ -69,7 +68,7 @@ namespace Grains
 		{
 			return Enumerable.Range(0, paragraphs.Length).Zip(paragraphs, (i, p) =>
 			{
-				var grain = ClusterClient.GetGrain<IParagraphAnnotatorGrain>(p.GetHashCode());
+				var grain = _clusterClient.GetGrain<IParagraphAnnotatorGrain>(p.GetHashCode());
 				var task = grain.AnnotateParagraph(p);
 				return (i, task);
 			});

@@ -17,22 +17,22 @@ namespace Grains
 {
 	public class ParagraphAnnotatorGrain : Grain, IParagraphAnnotatorGrain
 	{
-		private readonly IStanfordNLPGrainServiceClient StanfordNLPGrainServiceClient;
+		private readonly IStanfordNLPClient _stanfordNLpClient;
 
-		private readonly IWordsAPIGrainServiceClient WordsAPIGrainServiceClient;
+		private readonly IWordsAPIClient _wordsAPIClient;
 
-		public ParagraphAnnotatorGrain(IWordsAPIGrainServiceClient wordsAPIGrainServiceClient, IStanfordNLPGrainServiceClient stanfordNLPGrainServiceClient)
+		public ParagraphAnnotatorGrain(IWordsAPIClient wordsAPIClient, IStanfordNLPClient stanfordNLPClient)
 		{
-			WordsAPIGrainServiceClient = wordsAPIGrainServiceClient;
-			StanfordNLPGrainServiceClient = stanfordNLPGrainServiceClient;
+			_wordsAPIClient = wordsAPIClient;
+			_stanfordNLpClient = stanfordNLPClient;
 		}
 
 		public async Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraph(string text)
 		{
-			var annotatedText = await StanfordNLPGrainServiceClient.AnnotateTextAsync(text);
+			var annotatedText = await _stanfordNLpClient.AnnotateTextAsync(text);
 
 			var words = annotatedText.Sentences.SelectMany(s => s.Tokens.Select(t => t.lemma)).Distinct();
-			var lemmaTasks = words.Select(lemma => (lemma, WordsAPIGrainServiceClient.GetWordInfoAsync<WordInfo>(lemma))).ToList();
+			var lemmaTasks = words.Select(lemma => (lemma, _wordsAPIClient.GetWordInfoAsync<WordInfo>(lemma))).ToList();
 			await Task.WhenAll(lemmaTasks.Select(lt => lt.Item2));
 			var dict = lemmaTasks.Select(lt => (lt.lemma, lt.Item2.Result)).ToDictionary(kv => kv.lemma, kv => kv.Result);
 

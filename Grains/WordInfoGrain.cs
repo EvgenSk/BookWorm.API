@@ -15,12 +15,12 @@ namespace Grains
 	[StorageProvider(ProviderName = "Compound")]
 	public class WordInfoGrain : Grain<WordInfo>, IWordInfoGrain
 	{
-		readonly IWordsAPIGrainServiceClient WordsAPIGrainServiceClient;
+		readonly IWordsAPIClient _wordsAPIClient;
 		private Task _writeState;
 
-		public WordInfoGrain(IWordsAPIGrainServiceClient wordsAPIGrainServiceClient)
+		public WordInfoGrain(IWordsAPIClient wordsAPIClient)
 		{
-			WordsAPIGrainServiceClient = wordsAPIGrainServiceClient;
+			_wordsAPIClient = wordsAPIClient;
 		}
 		public Task<WordInfo> GetWordInfo() => Task.FromResult(State);
 
@@ -29,7 +29,7 @@ namespace Grains
 			await base.OnActivateAsync();
 			if (State is null)
 			{
-				State = await WordsAPIGrainServiceClient.GetWordInfoAsync<WordInfo>(this.GrainReference.GetPrimaryKeyString());
+				State = await _wordsAPIClient.GetWordInfoAsync<WordInfo>(this.GrainReference.GetPrimaryKeyString());
 				_writeState = WriteStateAsync();
 			}
 		}
