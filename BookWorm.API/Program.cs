@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore;
+﻿using GrainInterfaces;
+using Grains;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,17 +23,31 @@ namespace BookWorm.API
 			Host.CreateDefaultBuilder(args)
 			.ConfigureServices((builderContext, services) =>
 			{
-				// setup common services
-				// WordsAPI
-				// CoreNLP
+				var wordsAPIOptionsSection = builderContext.Configuration.GetSection("WordsAPI");
+				var stanfordNLPOptionsSection = builderContext.Configuration.GetSection("StanfordNLP");
+				services
+				.Configure<WordsAPIOptions>(wordsAPIOptionsSection)
+				.Configure<StanfordNLPOptions>(stanfordNLPOptionsSection)
+				.AddWordsAPIClient()
+				.AddStanfordNLPClient();
 			})
 			.ConfigureWebHost(webHostBuilder =>
 			{
 				webHostBuilder.UseStartup<Startup>();
 			})
-			.UseOrleans((builderVontext, services) =>
+			.UseOrleans((builderContext, siloBuilder) =>
 			{
-				// setup orleans storages
+				var mongoOptionsSection = builderContext.Configuration.GetSection("MongoDBGrainStorage");
+
+				siloBuilder
+				.UseDashboard()
+				.UseLocalhostClustering()
+				.AddMongoDBGrainStorage(OrleansHostingHelper.StorageName)
+				.ConfigureApplicationParts(parts =>
+				{
+					parts.AddApplicationPart(typeof(IWordInfoGrain).Assembly).WithReferences();
+					parts.AddApplicationPart(typeof(WordInfoGrain).Assembly).WithReferences();
+				});
 			});
 	}
 }
