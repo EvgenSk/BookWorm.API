@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WordsAPI.NET.Core;
+using WordsAPI.NET.Core.Types;
 using WordsAPI.NET.OrleansHostingExtensions;
 
 namespace Grains
@@ -27,14 +28,30 @@ namespace Grains
 			_stanfordNLpClient = stanfordNLPClient;
 		}
 
+		private static WordInfo WordInfoFromEverything(Everything everything)
+		{
+			var partOfSpeech =
+				everything.Results.FirstOrDefault()?.PartOfSpeech is string str
+				? (Enum.TryParse<PartOfSpeech>(str, out var pos) ? pos as PartOfSpeech? : null)
+				: null;
+
+			return new WordInfo
+			{
+				Word = everything.Word,
+				Lemma = everything.Word,
+				PartOfSpeech = partOfSpeech
+			};
+		}
 		public async Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraph(string text)
 		{
 			var annotatedText = await _stanfordNLpClient.AnnotateTextAsync(text);
 
 			var words = annotatedText.Sentences.SelectMany(s => s.Tokens.Select(t => t.lemma)).Distinct();
-			var lemmaTasks = words.Select(lemma => (lemma, _wordsAPIClient.GetWordInfoAsync<WordInfo>(lemma))).ToList();
+
+			var lemmaTasks = words.Select(lemma => (lemma, _wordsAPIClient.GetWordInfoAsync<Everything>(lemma))).ToList();
+
 			await Task.WhenAll(lemmaTasks.Select(lt => lt.Item2));
-			var dict = lemmaTasks.Select(lt => (lt.lemma, lt.Item2.Result)).ToDictionary(kv => kv.lemma, kv => kv.Result);
+			var dict = lemmaTasks.Select(lt => (lt.lemma, lt.Item2.Result)).ToDictionary(kv => kv.lemma, kv => WordInfoFromEverything(kv.Result));
 
 			return (annotatedText, dict);
 		}
