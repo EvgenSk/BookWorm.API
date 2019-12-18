@@ -31,15 +31,19 @@ namespace BookWorm.API
 				.AddWordsAPIClient()
 				.AddStanfordNLPClient();
 			})
-			.ConfigureWebHost(webHostBuilder =>
+			.ConfigureWebHostDefaults(webHostBuilder =>
 			{
 				webHostBuilder.UseStartup<Startup>();
 			})
 			.UseOrleans((builderContext, siloBuilder) =>
 			{
-				var mongoOptionsSection = builderContext.Configuration.GetSection("MongoDBGrainStorage");
-
 				siloBuilder
+				//.UseMongoDBClient("mongo://localhost/")
+				.ConfigureServices(s =>
+				{
+					var mongoOptionsSection = builderContext.Configuration.GetSection("MongoDBGrainStorage");
+					s.Configure<MongoDBGrainStorageOptions>(OrleansHostingHelper.StorageName, mongoOptionsSection);
+				})
 				.UseDashboard()
 				.UseLocalhostClustering()
 				.AddMongoDBGrainStorage(OrleansHostingHelper.StorageName)

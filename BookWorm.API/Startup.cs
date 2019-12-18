@@ -28,10 +28,6 @@ namespace BookWorm.API
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddControllers();
-			var stanfordNLPOptionsSection = Configuration.GetSection("StanfordNLP");
-			services.Configure<StanfordNLPOptions>(stanfordNLPOptionsSection);
-			services.AddSingleton<IStanfordNLPClient, StanfordNLPClient>();
-			services.AddOrleansClusterClient(Configuration).Wait();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
