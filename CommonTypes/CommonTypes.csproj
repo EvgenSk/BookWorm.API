@@ -8,4 +8,8 @@
     <PackageReference Include="NLP.API.Core" Version="0.1.0-CI-20190807-082528" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\lib\WordsAPI.NET\WordsAPI.NET.Core\WordsAPI.NET.Core.csproj" />
+  </ItemGroup>
+
 </Project>

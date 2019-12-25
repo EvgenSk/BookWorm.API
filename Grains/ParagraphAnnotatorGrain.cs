@@ -28,20 +28,9 @@ namespace Grains
 			_stanfordNLpClient = stanfordNLPClient;
 		}
 
-		private static WordInfo WordInfoFromEverything(Everything everything)
-		{
-			var partOfSpeech =
-				everything.Results.FirstOrDefault()?.PartOfSpeech is string str
-				? (Enum.TryParse<PartOfSpeech>(str, out var pos) ? pos as PartOfSpeech? : null)
-				: null;
+		private static WordInfo WordInfoFromEverything(Everything everything) =>
+			new WordInfo { Lemma = everything.Word, Everything = everything };
 
-			return new WordInfo
-			{
-				Word = everything.Word,
-				Lemma = everything.Word,
-				PartOfSpeech = partOfSpeech
-			};
-		}
 		public async Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraph(string text)
 		{
 			var annotatedText = await _stanfordNLpClient.AnnotateTextAsync(text);

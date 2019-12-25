@@ -25,6 +25,7 @@ namespace BookWorm.API
 			{
 				var wordsAPIOptionsSection = builderContext.Configuration.GetSection("WordsAPI");
 				var stanfordNLPOptionsSection = builderContext.Configuration.GetSection("StanfordNLP");
+
 				services
 				.Configure<WordsAPIOptions>(wordsAPIOptionsSection)
 				.Configure<StanfordNLPOptions>(stanfordNLPOptionsSection)
@@ -38,12 +39,14 @@ namespace BookWorm.API
 			.UseOrleans((builderContext, siloBuilder) =>
 			{
 				siloBuilder
-				//.UseMongoDBClient("mongo://localhost/")
-				.ConfigureServices(s =>
+				.ConfigureServices(services =>
 				{
 					var mongoOptionsSection = builderContext.Configuration.GetSection("MongoDBGrainStorage");
-					s.Configure<MongoDBGrainStorageOptions>(OrleansHostingHelper.StorageName, mongoOptionsSection);
+					services
+					.Configure<MongoDBOptions>(mongoOptionsSection)
+					.Configure<MongoDBGrainStorageOptions>(OrleansHostingHelper.StorageName, mongoOptionsSection);
 				})
+				.UseMongoDBClient()
 				.UseDashboard()
 				.UseLocalhostClustering()
 				.AddMongoDBGrainStorage(OrleansHostingHelper.StorageName)

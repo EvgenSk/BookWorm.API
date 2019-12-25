@@ -12,7 +12,7 @@ using WordsAPI.NET.OrleansHostingExtensions;
 
 namespace Grains
 {
-	[StorageProvider(ProviderName = "Compound")]
+	[StorageProvider(ProviderName = "Storage")]
 	public class WordInfoGrain : Grain<WordInfo>, IWordInfoGrain
 	{
 		readonly IWordsAPIClient _wordsAPIClient;
