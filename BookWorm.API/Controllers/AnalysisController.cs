@@ -26,17 +26,15 @@ namespace BookWorm.API.Controllers
 
 		// POST: api/Analysis
 		[HttpPost]
-		public async Task<string> Post([FromBody] string text)
+		public async Task<Dictionary<string, object>> Post([FromBody] string text)
 		{
 			var grain = ClusterClient.GetGrain<ITextAnnotatorGrain>(text.GetHashCode());
 			var annotatedText = await grain.AnnotateText(text);
-			Dictionary<string, string> textAndDictionary = new Dictionary<string, string>
+			return new Dictionary<string, object>
 			{
-				["Text"] = JsonConvert.SerializeObject(annotatedText.Item1),
-				["Dictionary"] = JsonConvert.SerializeObject(annotatedText.Item2)
+				["Text"] = annotatedText.Item1,
+				["Dictionary"] = annotatedText.Item2
 			};
-
-			return JsonConvert.SerializeObject(textAndDictionary);
 		}
 
 	}
