@@ -19,28 +19,31 @@ namespace Grains
 	public class ParagraphAnnotatorGrain : Grain, IParagraphAnnotatorGrain
 	{
 		private readonly IStanfordNLPClient _stanfordNLpClient;
+		private readonly IClusterClient _clusterClient;
 
-		private readonly IWordsAPIClient _wordsAPIClient;
-
-		public ParagraphAnnotatorGrain(IWordsAPIClient wordsAPIClient, IStanfordNLPClient stanfordNLPClient)
+		public ParagraphAnnotatorGrain(IClusterClient clusterClient, IStanfordNLPClient stanfordNLPClient)
 		{
-			_wordsAPIClient = wordsAPIClient;
+			_clusterClient = clusterClient;
 			_stanfordNLpClient = stanfordNLPClient;
 		}
-
-		private static WordInfo WordInfoFromEverything(Everything everything) =>
-			new WordInfo { Lemma = everything.Word, Everything = everything };
 
 		public async Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraph(string text)
 		{
 			var annotatedText = await _stanfordNLpClient.AnnotateTextAsync(text);
 
-			var words = annotatedText.Sentences.SelectMany(s => s.Tokens.Select(t => t.lemma)).Distinct();
+			var words = 
+				annotatedText.Sentences.SelectMany(s => s.Tokens)
+				.Where(t => t.pos != null && t.lemma.Length > 1)
+				.Select(t => t.lemma)
+				.Distinct();
 
-			var lemmaTasks = words.Select(lemma => (lemma, _wordsAPIClient.GetWordInfoAsync<Everything>(lemma))).ToList();
+			Task<WordInfo> GetWordInfoAsync(string lemma) => 
+				_clusterClient.GetGrain<IWordInfoGrain>(lemma).GetWordInfo();
+
+			var lemmaTasks = words.Select(lemma => (lemma, GetWordInfoAsync(lemma))).ToList();
 
 			await Task.WhenAll(lemmaTasks.Select(lt => lt.Item2));
-			var dict = lemmaTasks.Select(lt => (lt.lemma, lt.Item2.Result)).ToDictionary(kv => kv.lemma, kv => WordInfoFromEverything(kv.Result));
+			var dict = lemmaTasks.Select(lt => (lt.lemma, lt.Item2.Result)).ToDictionary(kv => kv.lemma, kv => kv.Result);
 
 			return (annotatedText, dict);
 		}

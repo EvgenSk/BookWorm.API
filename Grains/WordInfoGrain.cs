@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using WordsAPI.NET.Core;
+using WordsAPI.NET.Core.Types;
 using WordsAPI.NET.OrleansHostingExtensions;
 
 namespace Grains
@@ -24,12 +25,16 @@ namespace Grains
 		}
 		public Task<WordInfo> GetWordInfo() => Task.FromResult(State);
 
+		private static WordInfo WordInfoFromEverything(Everything everything) =>
+			new WordInfo { Lemma = everything?.Word, Everything = everything };
+
 		public override async Task OnActivateAsync()
 		{
 			await base.OnActivateAsync();
-			if (State is null)
+			if (State?.Lemma is null || State?.Everything is null)
 			{
-				State = await _wordsAPIClient.GetWordInfoAsync<WordInfo>(this.GrainReference.GetPrimaryKeyString());
+				var everything = await _wordsAPIClient.GetWordInfoAsync<Everything>(this.GrainReference.GetPrimaryKeyString());
+				State = WordInfoFromEverything(everything);
 				_writeState = WriteStateAsync();
 			}
 		}
