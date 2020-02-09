@@ -33,6 +33,8 @@ namespace BookWorm.API
 				.AddNewtonsoftJson(opt =>
 				{
 					opt.SerializerSettings.Converters.Add(new StringEnumConverter());
+					opt.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
+					opt.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 				});
 		}
 

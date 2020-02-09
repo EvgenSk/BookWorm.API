@@ -31,10 +31,11 @@ namespace Grains
 		public override async Task OnActivateAsync()
 		{
 			await base.OnActivateAsync();
-			if (State?.Lemma is null || State?.Everything is null)
+			if (State?.Lemma is null)
 			{
-				var everything = await _wordsAPIClient.GetWordInfoAsync<Everything>(this.GrainReference.GetPrimaryKeyString());
-				State = WordInfoFromEverything(everything);
+				var lemma = this.GrainReference.GetPrimaryKeyString();
+				var everything = await _wordsAPIClient.GetWordInfoAsync<Everything>(lemma);
+				State = WordInfoFromEverything(everything) ?? new WordInfo { Lemma = lemma };
 				_writeState = WriteStateAsync();
 			}
 		}

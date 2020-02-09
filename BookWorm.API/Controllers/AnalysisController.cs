@@ -26,15 +26,22 @@ namespace BookWorm.API.Controllers
 
 		// POST: api/Analysis
 		[HttpPost]
-		public async Task<Dictionary<string, object>> Post([FromBody] string text)
+		public async IAsyncEnumerable<Dictionary<string, object>> Post([FromBody] string text)
 		{
+			// TODO: make AnnotateTextByParagraphs return stream of paragraphs (orleans streams?)
+			// TODO: remove redundant entries from dictionaries
+	
 			var grain = ClusterClient.GetGrain<ITextAnnotatorGrain>(text.GetHashCode());
-			var annotatedText = await grain.AnnotateText(text);
-			return new Dictionary<string, object>
+			var annotatedParagraphs = await grain.AnnotateTextByParagraphs(text);
+			foreach (var (index, txt, dictionary) in annotatedParagraphs)
 			{
-				["Text"] = annotatedText.Item1,
-				["Dictionary"] = annotatedText.Item2
-			};
+				yield return new Dictionary<string, object>
+				{
+					["index"] = index,
+					["Text"] = txt,
+					["Dictionary"] = dictionary
+				};
+			}
 		}
 
 	}

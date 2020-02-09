@@ -27,11 +27,11 @@ namespace Grains
 		public async Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateText(string text)
 		{
 			var annotatedParagraphs = await AnnotateTextByParagraphs(text);
-			var texts = annotatedParagraphs.Select(p => p.Item1);
+			var texts = annotatedParagraphs.OrderBy(item => item.Item1).Select(item => item.Item2);
 
 			AnnotatedText resultText = MergeAnnotatedParagraphs(texts);
 
-			var dictionaries = annotatedParagraphs.Select(p => p.Item2);
+			var dictionaries = annotatedParagraphs.Select(p => p.Item3);
 			Dictionary<string, WordInfo> dictionary = MergeDictionaries(dictionaries);
 
 			return (resultText, dictionary);
@@ -55,23 +55,25 @@ namespace Grains
 			return resultText;
 		}
 
-		public async Task<IEnumerable<(AnnotatedText, Dictionary<string, WordInfo>)>> AnnotateTextByParagraphs(string text)
+		public async Task<List<(int, AnnotatedText, Dictionary<string, WordInfo>)>> AnnotateTextByParagraphs(string text)
 		{
 			var paragraphs = text.Split(ParagraphSeparators, StringSplitOptions.RemoveEmptyEntries);
-			var tasks = AnnotateParagraphs(paragraphs).ToList();
-			await Task.WhenAll(tasks.Select(t => t.Item2));
-
-			return tasks.OrderBy(tuple => tuple.Item1).Select(t => t.Item2.Result);
+			List<(int, AnnotatedText, Dictionary<string, WordInfo>)> results = new List<(int, AnnotatedText, Dictionary<string, WordInfo>)>();
+			await foreach(var p in AnnotateParagraphs(paragraphs))
+			{
+				results.Add(p);
+			}
+			return results;
 		}
 
-		private IEnumerable<(int, Task<(AnnotatedText, Dictionary<string, WordInfo>)>)> AnnotateParagraphs(string[] paragraphs)
+		private async IAsyncEnumerable<(int, AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraphs(string[] paragraphs)
 		{
-			return Enumerable.Range(0, paragraphs.Length).Zip(paragraphs, (i, p) =>
+			foreach(var (i, p) in Enumerable.Range(0, paragraphs.Length).Zip(paragraphs, (i, p) => (i, p)))
 			{
 				var grain = _clusterClient.GetGrain<IParagraphAnnotatorGrain>(p.GetHashCode());
-				var task = grain.AnnotateParagraph(p);
-				return (i, task);
-			});
+				var (text, dict) = await grain.AnnotateParagraph(p);
+				yield return (i, text, dict);
+			}
 		}
 	}
 }
