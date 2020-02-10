@@ -26,13 +26,10 @@ namespace Grains
 
 		public async Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateText(string text)
 		{
-			var annotatedParagraphs = await AnnotateTextByParagraphs(text);
+			var (annotatedParagraphs, dictionary) = await AnnotateTextByParagraphs(text);
 			var texts = annotatedParagraphs.OrderBy(item => item.Item1).Select(item => item.Item2);
 
 			AnnotatedText resultText = MergeAnnotatedParagraphs(texts);
-
-			var dictionaries = annotatedParagraphs.Select(p => p.Item3);
-			Dictionary<string, WordInfo> dictionary = MergeDictionaries(dictionaries);
 
 			return (resultText, dictionary);
 		}
@@ -55,15 +52,17 @@ namespace Grains
 			return resultText;
 		}
 
-		public async Task<List<(int, AnnotatedText, Dictionary<string, WordInfo>)>> AnnotateTextByParagraphs(string text)
+		public async Task<(List<(int, AnnotatedText)>, Dictionary<string, WordInfo>)> AnnotateTextByParagraphs(string text)
 		{
 			var paragraphs = text.Split(ParagraphSeparators, StringSplitOptions.RemoveEmptyEntries);
-			List<(int, AnnotatedText, Dictionary<string, WordInfo>)> results = new List<(int, AnnotatedText, Dictionary<string, WordInfo>)>();
+			List<(int, AnnotatedText)> resultParagraphs = new List<(int, AnnotatedText)>();
+			List<Dictionary<string, WordInfo>> dicts = new List<Dictionary<string, WordInfo>>();
 			await foreach(var p in AnnotateParagraphs(paragraphs))
 			{
-				results.Add(p);
+				resultParagraphs.Add((p.Item1, p.Item2));
+				dicts.Add(p.Item3);
 			}
-			return results;
+			return (resultParagraphs, MergeDictionaries(dicts));
 		}
 
 		private async IAsyncEnumerable<(int, AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraphs(string[] paragraphs)
