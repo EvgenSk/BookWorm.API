@@ -32,7 +32,11 @@ namespace BookWorm.API.Controllers
 			var (annotatedParagraphs, dictionary) = await grain.AnnotateTextByParagraphs(text);
 			return new Dictionary<string, object>
 			{
-				["paragraphs"] = annotatedParagraphs.ToList(),
+				["paragraphs"] = annotatedParagraphs.Select(p => new Dictionary<string, object>
+				{
+					["index"] = p.Item1,
+					["sentences"] = p.Item2.Sentences
+				}),
 				["dictionary"] = dictionary
 			};
 		}
