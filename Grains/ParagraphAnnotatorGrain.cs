@@ -37,7 +37,7 @@ namespace Grains
 				.Select(t => t.lemma)
 				.Distinct();
 
-			Task<WordInfo> GetWordInfoAsync(string lemma) => 
+			Task<WordInfo> GetWordInfoAsync(string lemma) =>
 				_clusterClient.GetGrain<IWordInfoGrain>(lemma).GetWordInfo();
 
 			var lemmaTasks = words.Select(lemma => (lemma, GetWordInfoAsync(lemma))).ToList();
