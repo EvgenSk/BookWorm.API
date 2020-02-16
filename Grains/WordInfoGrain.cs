@@ -47,14 +47,14 @@ namespace Grains
 			new WordInfo
 			{
 				Word = everything.Word,
-				Pronunciation = everything.Pronunciation.All,
-				Definitions = everything.Results.Select(r => new Definition
+				Pronunciation = everything.Pronunciation?.All ?? string.Empty,
+				Definitions = everything.Results?.Select(r => new Definition
 				{
 					DefinitionText = r.Definition,
 					Examples = r.Examples,
-					PartOfSpeech = PosToPos(r.PartOfSpeech.Value),
+					PartOfSpeech = PosToPos(r.PartOfSpeech),
 					Synonyms = r.Synonyms
-				}),
+				}).ToList(),
 			};
 
 		public override async Task OnActivateAsync()
@@ -64,7 +64,9 @@ namespace Grains
 			{
 				var lemma = this.GrainReference.GetPrimaryKeyString();
 				var everything = await _wordsAPIClient.GetWordInfoAsync<Everything>(lemma);
-				State = WordInfoFromWordsAPIEverything(everything) ?? new WordInfo { Word = lemma };
+				State = everything is null
+					? new WordInfo { Word = lemma }
+					: WordInfoFromWordsAPIEverything(everything);
 				_writeState = WriteStateAsync();
 			}
 		}

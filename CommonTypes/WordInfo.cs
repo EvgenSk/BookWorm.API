@@ -9,17 +9,17 @@ namespace CommonTypes
 	{
 		public string Word { get; set; }
 		public string Pronunciation { get; set; }
-		public IEnumerable<Definition> Definitions { get; set; }
-		public IEnumerable<Synonym> Synonyms { get; set; }
-		public IEnumerable<string> Examples { get; set; }
+		public List<Definition> Definitions { get; set; }
+		public List<Synonym> Synonyms { get; set; }
+		public List<string> Examples { get; set; }
 	}
 
 	public class Definition
 	{
 		public PartOfSpeech? PartOfSpeech { get; set; }
 		public string DefinitionText { get; set; }
-		public IEnumerable<string> Examples { get; set; }
-		public IEnumerable<string> Synonyms { get; set; }
+		public List<string> Examples { get; set; }
+		public List<string> Synonyms { get; set; }
 	}
 
 	public enum PartOfSpeech
