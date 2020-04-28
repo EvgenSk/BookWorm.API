@@ -24,12 +24,12 @@ namespace Grains
 			_clusterClient = clusterClient;
 		}
 
-		public async Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateText(string text)
+		public async Task<(Text, Dictionary<string, WordInfo>)> AnnotateText(string text)
 		{
 			var (annotatedParagraphs, dictionary) = await AnnotateTextByParagraphs(text);
 			var texts = annotatedParagraphs.OrderBy(item => item.Item1).Select(item => item.Item2);
 
-			AnnotatedText resultText = MergeAnnotatedParagraphs(texts);
+			Text resultText = MergeAnnotatedParagraphs(texts);
 
 			return (resultText, dictionary);
 		}
@@ -42,20 +42,19 @@ namespace Grains
 				.ToDictionary(group => group.Key, group => group.First());
 		}
 
-		private static AnnotatedText MergeAnnotatedParagraphs(IEnumerable<AnnotatedText> texts)
+		private static Text MergeAnnotatedParagraphs(IEnumerable<Text> texts)
 		{
 			var sentences = texts.SelectMany(t => t.Sentences).ToArray();
 			var orderedSentences =
 				Enumerable.Range(0, sentences.Length)
-				.Zip(sentences, (i, s) => new Sentence { Index = i, Tokens = s.Tokens });
-			var resultText = new AnnotatedText { Sentences = orderedSentences.ToList() };
-			return resultText;
+				.Zip(sentences, (i, s) => new CommonTypes.Sentence { Index = i, Tokens = s.Tokens });
+			return new Text { Sentences = orderedSentences.ToList() };
 		}
 
-		public async Task<(List<(int, AnnotatedText)>, Dictionary<string, WordInfo>)> AnnotateTextByParagraphs(string text)
+		public async Task<(List<(int, Text)>, Dictionary<string, WordInfo>)> AnnotateTextByParagraphs(string text)
 		{
 			var paragraphs = text.Split(ParagraphSeparators, StringSplitOptions.RemoveEmptyEntries);
-			List<(int, AnnotatedText)> resultParagraphs = new List<(int, AnnotatedText)>();
+			List<(int, Text)> resultParagraphs = new List<(int, Text)>();
 			List<Dictionary<string, WordInfo>> dicts = new List<Dictionary<string, WordInfo>>();
 			await foreach(var p in AnnotateParagraphs(paragraphs))
 			{
@@ -65,7 +64,7 @@ namespace Grains
 			return (resultParagraphs, MergeDictionaries(dicts));
 		}
 
-		private async IAsyncEnumerable<(int, AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraphs(string[] paragraphs)
+		private async IAsyncEnumerable<(int, Text, Dictionary<string, WordInfo>)> AnnotateParagraphs(string[] paragraphs)
 		{
 			foreach(var (i, p) in Enumerable.Range(0, paragraphs.Length).Zip(paragraphs, (i, p) => (i, p)))
 			{

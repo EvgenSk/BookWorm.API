@@ -10,6 +10,6 @@ namespace GrainInterfaces
 {
 	public interface IParagraphAnnotatorGrain : IGrainWithIntegerKey
 	{
-		Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateParagraph(string text);
+		Task<(Text, Dictionary<string, WordInfo>)> AnnotateParagraph(string text);
 	}
 }

@@ -11,7 +11,7 @@ namespace GrainInterfaces
 {
 	public interface ITextAnnotatorGrain : IGrainWithIntegerKey
 	{
-		Task<(AnnotatedText, Dictionary<string, WordInfo>)> AnnotateText(string text);
-		Task<(List<(int, AnnotatedText)>, Dictionary<string, WordInfo>)> AnnotateTextByParagraphs(string text);
+		Task<(Text, Dictionary<string, WordInfo>)> AnnotateText(string text);
+		Task<(List<(int, Text)>, Dictionary<string, WordInfo>)> AnnotateTextByParagraphs(string text);
 	}
 }
